@@ -1,0 +1,36 @@
+# datum zmeny pro 23.3. 2018, verze 2
+CHANGE_ID=2018032302
+
+# pocet minut do opetovneho nacteni konfigurace a odeslani namerenych dat
+REFRESH=1440
+
+# adresa severu
+SERVER="muj_server.cz/water_level_monitoring"
+
+# port serveru
+PORT=5000
+
+# wifi sit 
+SSID="moje_sit"
+
+# heslo na wifi
+PASSWORD="heslo_na_wifi"
+
+# vyska nadrze v centimetrech
+HEIGHT=2000
+
+# maximalni vyska hladiny v centimetrech
+MAXIMUM=1800
+
+# minimalni vyska hladiny v centimetrech
+MINIMUM=50
+
+# ovladani cerpadla v rezimu napousteni
+PUMP_ACTIVE=1
+
+# pocet mereni na vyhodnoceni vysky vodni hladiny
+AVERAGE_COUNT=5
+
+# soucet identifikatoru aktivnich senzoru
+CONTROL_SENSORS=15
+

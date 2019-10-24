@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="cs">
+	<head>
+		<meta charset="utf-8">
+		<title>Water level monitoring</title>
+	</head>
+	<body><center>
+		<header><h1>Water level monitoring</h1></header>
+		<main>
+			<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+			<script>
+		  		google.charts.load('current', {'packages':['line', 'corechart']});
+				google.charts.setOnLoadCallback(drawChart);
+
+				function drawChart() {
+				var chartDiv = document.getElementById('chart_div');
+				var data = new google.visualization.DataTable();
+				data.addColumn('number', 'Index');
+				data.addColumn('number', "TFmini");
+				data.addColumn('number', "JSN-SR04T-2");
+				data.addColumn('number', "KSL-35-PP");
+				data.addColumn('number', "MCP9808");
+
+				data.addRows([
+					{% for record in monitoring %}
+					[{{ loop.index0 }}, {{ record[0] }}, {{ record[1] }}, {{ record[2] }}, {{ record[3] }}], 
+					{% endfor %}
+				]);
+
+
+				var classicOptions = {
+					width: 900,
+					height: 500,
+			  		series: {
+			          0: {targetAxisIndex: 0},
+			          1: {targetAxisIndex: 0},
+			          2: {targetAxisIndex: 0},
+			          3: {targetAxisIndex: 1},
+			        },
+			        vAxes: {
+			          0: {title: 'Water level (Millimetre)'},
+			          1: {title: 'Temperature (Celsius)'}
+			        },
+			        hAxis: {
+			          ticks: [
+			          	{% for i in range(0, count) %}
+				    		{{ i }}, 
+				        {% endfor %}
+			          ]
+			        },
+			        vAxis: {
+
+			        }
+			    };
+
+			    var classicChart = new google.visualization.LineChart(chartDiv);
+			    classicChart.draw(data, classicOptions);
+			    }
+		  	</script>
+			<div id="chart_div"></div>   
+		</main>
+		</center>
+	</body>
+</html>

@@ -13,8 +13,8 @@ uint8_t ESP_init(char *msg, char *ssid, char *password) {
     ESP_restart();
     if (ESP_test() ||
         ESP_set_feedback(false_e) ||
-        ESP_set_autoconnect(false_e) ||
-        ESP_set_mode(3) ||
+        //ESP_set_autoconnect(false_e) ||
+        ESP_set_mode(ESP_CWMODE_AP) ||
         ESP_set_multiple_connections(false_e)) {
 
         sprintf(msg, "ESP init failed.\r\n");
@@ -183,9 +183,9 @@ uint8_t ESP_get_IP(char *msg) {
     sprintf(esp_cmd_buffer, "AT+CIFSR");
     ESP_send_command();
 
-    UART_read_line(UART_ESP8266, esp_buffer, ESP_BUFFER_SIZE, ESP_TIMEOUT);
-    UART_read_line(UART_ESP8266, esp_buffer, ESP_BUFFER_SIZE, ESP_TIMEOUT);
-    UART_read_line(UART_ESP8266, esp_buffer, ESP_BUFFER_SIZE, ESP_TIMEOUT);
+    //UART_read_line(UART_ESP8266, esp_buffer, ESP_BUFFER_SIZE, ESP_TIMEOUT);
+    //UART_read_line(UART_ESP8266, esp_buffer, ESP_BUFFER_SIZE, ESP_TIMEOUT);
+    //UART_read_line(UART_ESP8266, esp_buffer, ESP_BUFFER_SIZE, ESP_TIMEOUT);
     sscanf(esp_buffer, "+CIFSR:STAIP,\"%s\"", ip);          // STAIP
 
     if (strcmp(ip, "0.0.0.0") == 0) {

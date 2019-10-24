@@ -51,6 +51,7 @@ uint16_t lidar_level;
 uint16_t ultrasonic_level;
 uint16_t temperature;
 uint8_t floats_level;
+uint8_t SSR_active;
 
 uint8_t embd_system_status;
 union EMBD_configuration *embd_configuration;
@@ -65,7 +66,7 @@ void monitoring_init();
  */
 void monitoring_loop();
 
-/*
+/**
  * Check active sensors for water level
  */
 void check_level();

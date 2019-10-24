@@ -344,6 +344,7 @@ Management}{\@fit@EN}%
 \define@key{projinfo}{department}{\set@department{#1}{\@departmentn@CS}{\@departmentn@EN}}
 \define@key{projinfo}{project}{\set@project{#1}}
 \define@key{projinfo}{year}{\def\@year{#1}}
+\define@key{projinfo}{revision}{\def\@revision{#1}}
 \define@key{projinfo}{date}{\def\@date{#1}}
 %\define@key{projinfo}{author}{\def\@author{#1}}
 \define@key{projinfo}{author.name}{\def\@author@n{#1}}
@@ -767,7 +768,7 @@ Management}{\@fit@EN}%
 
 \vspace{10mm}
 
-\mktxtt{11}{BRNO \@year}
+\mktxtt{11}{BRNO \@year \hfill \@revision}
 
 \iftwoside
   \newgeometry{left=3.46cm, text={15.2cm,23.0cm}, top=2.96cm}

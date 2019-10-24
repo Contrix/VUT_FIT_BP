@@ -62,7 +62,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
         HAL_UART_Receive_IT(uarts[UART_LIDAR].huart, (uint8_t *)&(uarts[UART_LIDAR].Rx_char), 1);
     }
 
-    // TODO
     /// ESP-01
     if (huart->Instance == USART2) {
         put_char(uarts[UART2_e].Rx_vector, uarts[UART2_e].Rx_char);
@@ -95,12 +94,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
             put_char(uarts[UART3_e].Rx_vector, uarts[UART3_e].Rx_char);
         }
 
+        //UART_send_message(UART_ESP8266, &uarts[UART3_e].Rx_char, 1);
         HAL_UART_Receive_IT(&huart3, (uint8_t *) &(uarts[UART3_e].Rx_char), 1);
     }
 
     /// ESP-12E
     if (huart->Instance == USART4) {
-        UART_send_message(UART_DBG, &uarts[UART4_e].Rx_char, 1);
+        put_char(uarts[UART4_e].Rx_vector, uarts[UART4_e].Rx_char);
+        //UART_send_message(UART_DBG, &uarts[UART4_e].Rx_char, 1);
         HAL_UART_Receive_IT(&huart4, (uint8_t *) &(uarts[UART4_e].Rx_char), 1);
     }
 

@@ -32,6 +32,10 @@ void init_configuration(union EMBD_configuration *configuration) {
     sprintf(config_buffer, "SERVER=%s\r\n", configuration->config.server_address);
     UART_send_message(UART_DBG, config_buffer, (uint16_t)strlen(config_buffer));
 
+    read_string("LOCATION=", configuration->config.location, 128);
+    sprintf(config_buffer, "LOCATION=%s\r\n", configuration->config.location);
+    UART_send_message(UART_DBG, config_buffer, (uint16_t)strlen(config_buffer));
+
     configuration->config.server_port = (uint16_t)read_number("PORT=", 1, UINT16_MAX);
     sprintf(config_buffer, "PORT=%u\r\n", configuration->config.server_port);
     UART_send_message(UART_DBG, config_buffer, (uint16_t)strlen(config_buffer));
@@ -290,6 +294,7 @@ void set_configuration(Vector_t *conf, uint8_t force) {
     if (force || configuration_new->config.change_id != change_id) {
         store_configuration(configuration_new);
         UART_send_message(UART_DBG, "\r\nSettings is saving.\r\n", 23);
+        load_configuration(embd_configuration);
     }
 
     free(configuration_new);
@@ -316,6 +321,13 @@ uint8_t set_value(union EMBD_configuration *configuration, char *word, char *val
         if (strlen(value) <= 128) {
             strcpy((char *) configuration->config.server_address, value);
             sprintf(msg_buffer, "%s=%s\r\n", CONFIG_SERVER, configuration->config.server_address);
+            UART_send_message(UART_DBG, msg_buffer, (uint16_t) strlen(msg_buffer));
+        }
+
+    } else if (string_compare(word, CONFIG_LOCATION)) {
+        if (strlen(value) <= 128) {
+            strcpy((char *) configuration->config.location, value);
+            sprintf(msg_buffer, "%s=%s\r\n", CONFIG_LOCATION, configuration->config.location);
             UART_send_message(UART_DBG, msg_buffer, (uint16_t) strlen(msg_buffer));
         }
 
@@ -397,6 +409,9 @@ void print_configuration() {
     UART_send_message(UART_DBG, msg_buffer, (uint16_t) strlen(msg_buffer));
 
     sprintf(msg_buffer, "%s=%s\r\n", CONFIG_SERVER, embd_configuration->config.server_address);
+    UART_send_message(UART_DBG, msg_buffer, (uint16_t)strlen(msg_buffer));
+
+    sprintf(msg_buffer, "%s=%s\r\n", CONFIG_LOCATION, embd_configuration->config.location);
     UART_send_message(UART_DBG, msg_buffer, (uint16_t)strlen(msg_buffer));
 
     sprintf(msg_buffer, "%s=%u\r\n", CONFIG_PORT, embd_configuration->config.server_port);

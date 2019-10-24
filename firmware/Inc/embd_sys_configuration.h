@@ -22,7 +22,7 @@
 #include <stdint-gcc.h>
 
 #define CONFIG_VALUE_LEN 130
-#define CONFIG_ID_LEN 16
+#define CONFIG_ID_LEN 24
 #define CONNFIG_COUNT 3
 #define COMMNET '#'
 #define EQ '='
@@ -30,6 +30,7 @@
 #define CONFIG_CHANGE_ID "CHANGE_ID"
 #define CONFIG_REFRESH "REFRESH"
 #define CONFIG_SERVER "SERVER"
+#define CONFIG_LOCATION "LOCATION"
 #define CONFIG_PORT "PORT"
 #define CONFIG_MINIMUM "MINIMUM"
 #define CONFIG_MAXIMUM "MAXIMUM"
@@ -48,7 +49,7 @@
 #define CONFIG_FLOATS_ID 4
 #define CONFIG_MCP_ID 8
 
-#define CONFIG_FLASH_WORD_LEN 128
+#define CONFIG_FLASH_WORD_LEN 160
 #define FLASH_PAGE_ADDRESS 0x803F000U // page 127
 
 typedef enum { STOP_e, FILL_e, DRAIN_e } SSR_state;
@@ -66,6 +67,7 @@ typedef struct Configuration_t {
     uint16_t server_port;
     uint8_t ssid[CONFIG_VALUE_LEN];
     uint8_t password[CONFIG_VALUE_LEN];
+    uint8_t location[CONFIG_VALUE_LEN];
 } Configuration_t;
 
 union EMBD_configuration {
@@ -113,7 +115,7 @@ uint32_t flash_read(uint32_t address);
  */
 void load_configuration(union EMBD_configuration *configuration);
 
-/*
+/**
  * Stores configuration in to flash memory
  */
 void store_configuration(union EMBD_configuration *configuration);

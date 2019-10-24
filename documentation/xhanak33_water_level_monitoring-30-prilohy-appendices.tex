@@ -52,38 +52,67 @@
 \chapter{Ukázka konfiguračního souboru}
 	\label{sec:cfg}
 	\begin{lstlisting}
-# datum zmeny pro 23.3. 2018, verze 2
+    # datum zmeny pro 23.3. 2018, verze 2
 CHANGE_ID=2018032302
-
-# pocet minut do opetovneho nacteni konfigurace a odeslani namerenych dat
+    # pocet minut do opetovneho nacteni konfigurace a odeslani namerenych dat
 REFRESH=1440
-
-# adresa severu
-SERVER="muj_server.cz/water_level_monitoring"
-
-# wifi sit 
+    # adresa severu
+SERVER="muj_server.cz/"
+    # umisteni obsluzneho skriptu na serveru
+LOCATION="water_level_monitoring"
+    # port skriptu
+PORT=5000
+    # wifi sit 
 SSID="moje_sit"
-
-# heslo na wifi
+    # heslo na wifi
 PASSWORD="heslo_na_wifi"
-
-# vyska nadrze v centimetrech
+    # vyska nadrze v milimetrech
 HEIGHT=2000
-
-# maximalni vyska hladiny v centimetrech
+    # maximalni vyska hladiny v milimetrech
 MAXUMUM=1800
-
-# minimalni vyska hladiny v centimetrech
+    # minimalni vyska hladiny v milimetrech
 MINIMUM=50
-
-# ovladani cerpadla v rezimu napousteni
+    # ovladani cerpadla v rezimu napousteni
 PUMP_ACTIVE=1
-
-# pocet mereni na vyhodnoceni vysky vodni hladiny
+    # pocet mereni na vyhodnoceni vysky vodni hladiny
 AVERAGE_COUNT=5
-
-# soucet identifikatoru aktivnich senzoru
+    # soucet identifikatoru aktivnich senzoru
 CONTROL_SENSORS=15\end{lstlisting}
+
+\chapter{Ukázka konfigurace přes rozhraní UART}
+    \label{sec:cfg}
+    \begin{lstlisting}
+Odposlech
+cu -l /dev/ttyUSB0 -s 9600
+
+Zapis
+Inicializace
+echo -ne '5000\r\n' > /dev/ttyUSB0
+echo -ne '"10.42.0.1"\r\n' > /dev/ttyUSB0
+
+Zmena konfigurace
+echo -ne '\x07' > /dev/ttyUSB0
+echo -ne 'REFRESH=1\r\n' > /dev/ttyUSB0
+echo -ne 'SERVER="10.42.0.1"\r\n' > /dev/ttyUSB0
+echo -ne 'LOCATION="water_level_mnt"\r\n' > /dev/ttyUSB0
+echo -ne '\x06' > /dev/ttyUSB0
+
+Programovani
+STM32_Programmer_CLI -c port=SWD reset=HWrst -w main.bin 0x08000000 -v -rst
+
+Uplna ukazkova inicializace
+echo -ne '1\r\n' > /dev/ttyUSB0
+echo -ne '"10.42.0.1"\r\n' > /dev/ttyUSB0
+echo -ne '"water_level_monitoring"\r\n' > /dev/ttyUSB0
+echo -ne '5000\r\n' > /dev/ttyUSB0
+echo -ne '"Wifi"\r\n' > /dev/ttyUSB0
+echo -ne '"heslo"\r\n' > /dev/ttyUSB0
+echo -ne '5000\r\n' > /dev/ttyUSB0
+echo -ne '2000\r\n' > /dev/ttyUSB0
+echo -ne '200\r\n' > /dev/ttyUSB0
+echo -ne '1\r\n' > /dev/ttyUSB0
+echo -ne '3\r\n' > /dev/ttyUSB0
+echo -ne '15\r\n' > /dev/ttyUSB0\end{lstlisting}
 
 \chapter{Schéma řídicí desky}
 	\label{sec:main_board_scheme}
@@ -99,4 +128,4 @@ CONTROL_SENSORS=15\end{lstlisting}
 
 \chapter{Plošný spoj pro podpůrnou desku}
 	\label{sec:support_board_pcb}
-	\includepdf[pages={1,2}, landscape=true, angle=270, offset=20 -40]{obrazky-figures/support_board_pcb.pdf}
+	\includepdf[pages={1,2}, landscape=true, offset=20 -40]{obrazky-figures/support_board_pcb.pdf}

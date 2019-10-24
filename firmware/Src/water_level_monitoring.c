@@ -13,7 +13,7 @@ void monitoring_init() {
 
     LED1_set();
     UART_init();
-    UART_send_message(UART_DBG, "System started.\r\n", 17);
+    UART_send_message(UART_DBG, "System started - v1.1\r\n", 23);
 
     /// MCP9808
     if (MCP9808_init(&hi2c2) == EMBD_FAILURE) {
@@ -56,12 +56,12 @@ void monitoring_loop() {
     LED1_toggle();
 
     if (main_counter % 30 == 0) {
-        sprintf(msg_buffer, "id1=%u\tid2=%u\tid4=%u\tid8=%u.%u\r\n", lidar_level,
-                ultrasonic_level, floats_level, temperature / 10, temperature % 10);
-        UART_send_message(UART_DBG, msg_buffer, (uint16_t)strlen(msg_buffer));
         LED1_set();
         check_level();
         SSR_control();
+        sprintf(msg_buffer, "id1=%u\tid2=%u\tid4=%u\tid8=%u.%u\r\n", lidar_level,
+                ultrasonic_level, floats_level, temperature / 10, temperature % 10);
+        UART_send_message(UART_DBG, msg_buffer, (uint16_t)strlen(msg_buffer));
     }
 
     if (++main_counter >= 60 * embd_configuration->config.refresh) {
@@ -71,8 +71,11 @@ void monitoring_loop() {
 
         if (ESP_connect_to_wifi((char *)embd_configuration->config.ssid,
                 (char *)embd_configuration->config.password) == EMBD_SUCCESS) {
-            sprintf(buffer, "GET /water_level_monitoring?id1=%u&id2=%u&id4=%u&id8=%u.%u HTTP/1.0\r\n\r\n",
-                    lidar_level, ultrasonic_level, floats_level, temperature / 10, temperature % 10);
+            sprintf(buffer, "GET /%s?ssr=%u&id1=%"PRIu32"&id2=%"PRIu32"&id4=%u&id8=%u.%u HTTP/1.0\r\n\r\n",
+                    embd_configuration->config.location, SSR_active,
+                    embd_configuration->config.height - lidar_level,
+                    embd_configuration->config.height - ultrasonic_level,
+                    floats_level, temperature / 10, temperature % 10);
             if (ESP_TCP_GET((char *) embd_configuration->config.server_address, embd_configuration->config.server_port,
                             buffer, (uint16_t) strlen(buffer), msg_buffer, response) == EMBD_FAILURE) {
                 UART_send_message(UART_DBG, msg_buffer, (uint16_t) strlen(msg_buffer));
@@ -165,20 +168,20 @@ void SSR_control() {
     /// check levels
     if ((embd_configuration->config.control_sensors & CONFIG_LIDAR_ID) && lidar_level) {
         control++;
-        if (lidar_level < embd_configuration->config.level_min) {
+        if (lidar_level > (embd_configuration->config.height - embd_configuration->config.level_min)) {
             min_level++;
         }
-        if (lidar_level > embd_configuration->config.level_max) {
+        if (lidar_level < (embd_configuration->config.height - embd_configuration->config.level_max)) {
             max_level++;
         }
     }
 
     if ((embd_configuration->config.control_sensors & CONFIG_JSN_ID) && ultrasonic_level) {
         control++;
-        if (ultrasonic_level < embd_configuration->config.level_min) {
+        if (ultrasonic_level > (embd_configuration->config.height - embd_configuration->config.level_min)) {
             min_level++;
         }
-        if (ultrasonic_level > embd_configuration->config.level_max) {
+        if (ultrasonic_level < (embd_configuration->config.height - embd_configuration->config.level_max)) {
             max_level++;
         }
     }
@@ -196,14 +199,18 @@ void SSR_control() {
     if ((control >= 3 && min_level >= 2) || (control >= 2 && min_level >= 1) || (control >= 1 && min_level)) {
         if (embd_configuration->config.pump_active == FILL_e) {
             SSR_set();
+            SSR_active = 1;
         } else if (embd_configuration->config.pump_active == DRAIN_e) {
             SSR_reset();
+            SSR_active = 0;
         }
     } else if ((control >= 3 && max_level >= 2) || (control >= 2 && max_level >= 1) || (control >= 1 && max_level)) {
         if (embd_configuration->config.pump_active == FILL_e) {
             SSR_reset();
+            SSR_active = 0;
         } else if (embd_configuration->config.pump_active == DRAIN_e) {
             SSR_set();
+            SSR_active = 1;
         }
     }
 }

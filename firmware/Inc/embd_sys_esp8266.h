@@ -22,6 +22,7 @@
 #define ESP_BUFFER_SIZE 512
 #define ESP_TIMEOUT 3000
 #define ESP_LINES_LIMIT 16
+#define ESP_CWMODE_AP 1
 
 char esp_cmd_buffer[ESP_CMD_BUFFER_SIZE];
 char esp_buffer[ESP_BUFFER_SIZE];
